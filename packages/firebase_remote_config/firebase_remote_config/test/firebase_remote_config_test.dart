@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_remote_config_platform_interface/firebase_remote_config_platform_interface.dart';
@@ -33,11 +35,11 @@ void main() {
       await Firebase.initializeApp();
       remoteConfig = RemoteConfig.instance;
 
-      mockLastFetchTime = DateTime(2020, 1, 1);
+      mockLastFetchTime = DateTime(2020);
       mockLastFetchStatus = RemoteConfigFetchStatus.noFetchYet;
       mockRemoteConfigSettings = RemoteConfigSettings(
-        fetchTimeout: Duration(seconds: 10),
-        minimumFetchInterval: Duration(hours: 1),
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(hours: 1),
       );
       mockParameters = <String, RemoteConfigValue>{};
       mockDefaultParameters = <String, dynamic>{};
@@ -129,7 +131,7 @@ void main() {
 
       test('set settings', () async {
         final remoteConfigSettings = RemoteConfigSettings(
-          fetchTimeout: Duration(seconds: 8),
+          fetchTimeout: const Duration(seconds: 8),
           minimumFetchInterval: Duration.zero,
         );
         await remoteConfig.setConfigSettings(remoteConfigSettings);
@@ -249,16 +251,20 @@ void main() {
 }
 
 class MockFirebaseRemoteConfig extends Mock
-    with MockPlatformInterfaceMixin
-    implements TestFirebaseRemoteConfigPlatform {
+    with
+        // ignore: prefer_mixin
+        MockPlatformInterfaceMixin
+    implements
+        TestFirebaseRemoteConfigPlatform {
   MockFirebaseRemoteConfig();
 }
 
 class TestFirebaseRemoteConfigPlatform extends FirebaseRemoteConfigPlatform {
   TestFirebaseRemoteConfigPlatform() : super();
 
-  instanceFor({FirebaseApp app, Map<dynamic, dynamic> pluginConstants}) {}
+  void instanceFor({FirebaseApp app, Map<dynamic, dynamic> pluginConstants}) {}
 
+  @override
   FirebaseRemoteConfigPlatform delegateFor({FirebaseApp app}) {
     return this;
   }
